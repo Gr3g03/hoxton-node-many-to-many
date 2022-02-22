@@ -180,12 +180,25 @@ SELECT * FROM interviews WHERE id =?;
 `)
 
 
+const getInterviewersForApplicants = db.prepare(`
+SELECT DISTINCT interviewers.* FROM interviewers
+JOIN interviews ON interviewers.id = interviews.interviewerId
+WHERE interviews.applicantId = ?;
+`)
+
+const getApplicantsForInterviwers = db.prepare(`
+SELECT DISTINCT applicants.* FROM applicants
+JOIN interviews ON applicants.id = interviews.applicantId
+WHERE interviews.interviewerId = ?;
+`)
+
 app.get('/interviews', (req, res) => {
     const interviews = getAllInterviews.all()
     res.send(interviews)
 })
-app.get('/interview/:id', (req, res) => {
+app.get('/interviews/:id', (req, res) => {
     const id = req.params.id
+
     const interview = getInterviewById.get(id)
     res.send(interview)
 
@@ -194,6 +207,10 @@ app.get('/interview/:id', (req, res) => {
 app.get('/interviewers', (req, res) => {
     const interviewers = getAllinterviewers.all()
 
+    for (const interviewer of interviewers) {
+        const applicants = getApplicantsForInterviwers.all(interviewer.id)
+        interviewer.applicants = applicants
+    }
     res.send(interviewers)
 
 })
@@ -206,8 +223,14 @@ app.get('/interviewers/:id', (req, res) => {
 
 app.get('/applicants', (req, res) => {
     const applicants = getAllApplications.all()
+
+    for (const applicant of applicants) {
+        const interviewers = getInterviewersForApplicants.all(applicant.id)
+        applicant.interviewers = interviewers
+    }
     res.send(applicants)
 })
+
 app.get('/applicants/:id', (req, res) => {
     const id = req.params.id
 
