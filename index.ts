@@ -239,9 +239,41 @@ app.get('/applicants/:id', (req, res) => {
 })
 
 
-app.post('/interviews', (req, res) => { })
-app.post('/interviewers', (req, res) => { })
-app.post('/applicants', (req, res) => { })
+app.post('/interviews', (req, res) => {
+    const { applicantId, interviewerId, data, score } = req.body
+
+    const errors = []
+
+    // if (typeof applicantId !== 'number') {
+    //     errors.push(` applicantId not a number `)
+    // }
+    // if (typeof interviewerId !== 'number') {
+    //     errors.push(`interviewerId not a number`)
+    // }
+    // if (typeof data !== 'string') {
+    //     errors.push(`data not a string`)
+    // }
+    // if (typeof score !== 'number') {
+    //     errors.push(`score not a number`)
+    // }
+    if (errors.length === 0) {
+
+        const interviewer = getIntervierById.get(interviewerId)
+        const applicant = getApplicationById.get(applicantId)
+
+        if (interviewer && applicant) {
+            const result = createInterviews.run(applicantId, interviewerId, data, score)
+            const interview = getInterviewById.get(result.lastInsertRowid)
+            res.send(interview)
+        } else {
+            res.status(404).send({ error: ' interview not found' })
+        }
+    } else {
+        res.send({ errors: errors })
+    }
+})
+// app.post('/interviewers', (req, res) => { })
+// app.post('/applicants', (req, res) => { })
 
 
 app.listen(4000, () => console.log(`server is up and running on:  http://localhost:4000`))
