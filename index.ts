@@ -244,22 +244,22 @@ app.post('/interviews', (req, res) => {
 
     const errors = []
 
-    // if (typeof applicantId !== 'number') {
-    //     errors.push(` applicantId not a number `)
-    // }
-    // if (typeof interviewerId !== 'number') {
-    //     errors.push(`interviewerId not a number`)
-    // }
-    // if (typeof data !== 'string') {
-    //     errors.push(`data not a string`)
-    // }
-    // if (typeof score !== 'number') {
-    //     errors.push(`score not a number`)
-    // }
+    if (typeof applicantId !== 'number') {
+        errors.push(` applicantId not a number `)
+    }
+    if (typeof interviewerId !== 'number') {
+        errors.push(`interviewerId not a number`)
+    }
+    if (typeof data !== 'string') {
+        errors.push(`data not a string`)
+    }
+    if (typeof score !== 'number') {
+        errors.push(`score not a number`)
+    }
     if (errors.length === 0) {
 
-        const interviewer = getIntervierById.get(interviewerId)
         const applicant = getApplicationById.get(applicantId)
+        const interviewer = getIntervierById.get(interviewerId)
 
         if (interviewer && applicant) {
             const result = createInterviews.run(applicantId, interviewerId, data, score)
