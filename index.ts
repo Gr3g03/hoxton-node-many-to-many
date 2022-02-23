@@ -192,6 +192,16 @@ JOIN interviews ON applicants.id = interviews.applicantId
 WHERE interviews.interviewerId = ?;
 `)
 
+
+
+const joinTables = db.prepare(`
+SELECT applicants.*, interviews.date, interviews.score, interviewers.name as 'interviewerName' FROM applicants
+JOIN interviews ON applicants.id = interviews.applicantId
+JOIN interviewers ON interviewers.id = interviews.interviewerId
+WHERE applicants.id = 3;`)
+
+
+
 app.get('/interviews', (req, res) => {
     const interviews = getAllInterviews.all()
     res.send(interviews)
@@ -237,6 +247,9 @@ app.get('/applicants/:id', (req, res) => {
     const applicant = getApplicationById.get(id)
     res.send(applicant)
 })
+
+
+
 
 
 app.post('/interviews', (req, res) => {
